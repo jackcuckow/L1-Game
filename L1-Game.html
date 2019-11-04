@@ -1,0 +1,187 @@
+<!doctype html>
+<head>
+<title>Avoid the Beast</title>
+</head>
+<style>
+    canvas {
+        display: block;
+        margin: auto;
+    }
+
+</style>
+<canvas id="gameCanvas" width="400" height="400"></canvas>
+
+<script>
+    var canvas,
+        canvasContext;
+
+    window.onload = function() {
+        canvas = document.getElementById('gameCanvas');
+        canvasContext = canvas.getContext('2d');
+
+        document.addEventListener('keydown', keyPressed);
+        document.addEventListener('keyup', keyReleased);
+
+        setInterval(updateAll, 1000 / 60);
+    }
+
+    var leftArrowPressed = false;
+    var rightArrowPressed = false;
+    var reset = true
+
+    if (reset) {
+        var userName = prompt('select username');
+        var difficulty = prompt('select a difficulty. easy or hard' || ' ');
+        var res = difficulty.toLowerCase();
+        if (difficulty = 'hard') {
+            var objectYspeed = 12;
+        }
+        if (difficulty = 'easy') {
+            var objectYspeed = 8;
+        }
+
+        var objectStart = true;
+        var startingPos = true;
+        var play = true;
+        var score = -1
+        reset = false
+    }
+
+    const P_SIZE = 50;
+    const P_SPEED = 15;
+    const O_SIZE = 20;
+    var Xpos = 0;
+    var Ypos = 0;
+    var pXspeed = 4;
+    var objectXpos = 0;
+    var objectYpos = 0;
+    var objectXspeed = 0;
+    
+    const LEFT_KEY = 37;
+    const RIGHT_KEY = 39;
+    var leftKeyPressed = false;
+    var rightKeyPressed = false;
+   
+    
+    function makeEnemy(){
+        const objectXspeed = 40; 
+    }
+
+    function updateAll() {
+        if (play) {
+
+            colorRect(0, 0, canvas.width, canvas.height, 'black') // bg
+            colorRect(Xpos, Ypos, P_SIZE, P_SIZE, 'orange'); // player
+            drawObject()
+            playerMovement()
+            objectMovement()
+            
+            if (startingPos) {
+                startPos();
+                startingPos = false;
+            }
+            if (objectStart) {
+                objectPos();
+                score = score + 1;
+                objectStart = false;
+            }
+            gameOver()
+        }
+        textDraw()
+        textDraw('15pt Arial', 'white', 'score: ' + score, 20, 30)
+    }
+
+    function colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {
+        canvasContext.fillStyle = fillColor;
+        canvasContext.fillRect(topLeftX, topLeftY, boxWidth, boxHeight);
+    }
+
+
+    function textDraw(style, color, text, x, y) {
+        canvasContext.font = style;
+        canvasContext.fillStyle = color;
+        canvasContext.fillText(text, x, y);
+    }
+
+    function startPos() {
+        Xpos = canvas.width / 2 - P_SIZE / 2;
+        Ypos = canvas.height - P_SIZE - 5;
+    }
+
+    function keyPressed(evt) {
+        if (evt.keyCode == LEFT_KEY) {
+            leftKeyPressed = true;
+        }
+        if (evt.keyCode == RIGHT_KEY) {
+            rightKeyPressed = true;
+        }
+    }
+
+    function keyReleased(evt) {
+        if (evt.keyCode == LEFT_KEY) {
+            leftKeyPressed = false;
+        }
+        if (evt.keyCode == RIGHT_KEY) {
+            rightKeyPressed = false;
+        }
+    }
+
+    function playerMovement() {
+
+        if (leftKeyPressed) {
+            Xpos -= pXspeed;
+            
+            if (Xpos < 0) {
+                Xpos = canvas.width - P_SIZE;
+            }
+        }
+        
+        if (rightKeyPressed) {
+            Xpos += pXspeed;
+            
+            if (Xpos + P_SIZE > canvas.width) {
+                Xpos = 0;
+            }
+        }
+
+        
+        
+    }
+
+    function objectPos() {
+        objectXpos = Math.floor(Math.random() * ((canvas.width - O_SIZE) - 1 + 1)) + 1;;
+        objectYpos = 0 - O_SIZE;
+        objectXspeed = Math.floor(Math.random() * (5 - 1 + 1)) + 1;
+    }
+
+    function drawObject() {
+        colorRect(objectXpos, objectYpos, O_SIZE, O_SIZE, 'pink')
+    }
+
+    function objectMovement() {
+        objectXpos = objectXpos + objectXspeed;
+        objectYpos = objectYpos + objectYspeed;
+
+        if (objectXpos < 0) {
+            objectXspeed = objectXspeed * -1;
+        }
+
+        if (objectXpos > canvas.width - O_SIZE) {
+            objectXspeed = objectXspeed * -1;
+        }
+
+        if (objectYpos > canvas.height + O_SIZE) {
+            objectStart = true;
+        }
+    }
+
+    function gameOver() {
+        if (objectXpos > Xpos - O_SIZE &&
+            objectXpos < Xpos + P_SIZE &&
+            objectYpos > Ypos - O_SIZE &&
+            objectYpos < Ypos + P_SIZE) {
+            play = false;
+            alert("welldone your score was " + score + " refresh to play again");
+        }
+    } 
+    </script>
